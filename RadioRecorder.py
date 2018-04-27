@@ -1,4 +1,4 @@
-import sys
+import argparse
 import vlc
 import time
 import datetime
@@ -16,13 +16,23 @@ def record(radio_url, file_name, program_time):
     time.sleep(program_time + 5)
 
 
+def read_arguments():
+    parser = argparse.ArgumentParser(description="Parse arguments for stream URL, filename, and duration")
+    parser.add_argument("-u", "--url", help="URL for the stream to be recorded (defaults to radio udg lagos)",
+                        default="http://lagosdemoreno.radioudg.okhosting.com:8000/", dest="stream_url")
+    parser.add_argument("-f", "--filename", help="prefix for the filename, will apend date and mp3 extension",
+                        default="FiccionesDeLaPalabra", dest="name_prefix")
+    parser.add_argument("-d", "--duration", type=int, help="Duration of program in minutes (defaults to 70 mins)",
+                        default=70, dest="duration")
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
-    # defaults are for Lagos de Moreno and the name of file for Ficciones de la palabra
-    radio_url = "http://lagosdemoreno.radioudg.okhosting.com:8000/"
+    args = read_arguments()
     name_part = datetime.date.today()
     ext = '.mp3'
-    file_name = f"FiccionesDeLaPalabra-{name_part}{ext}"
-    record(radio_url, file_name, 2*60)
+    out_filename = f"{args.name_prefix}-{name_part}{ext}"
+    record(args.stream_url, out_filename, args.duration * 60)
 
 
 
